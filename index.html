@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>ClinicFinder + SmartQueue | Healthcare Access</title>
+  <!-- Google Fonts & Font Awesome Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f4f7fc;
+      color: #1e2a3e;
+      padding: 24px 20px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    /* header */
+    .header {
+      margin-bottom: 28px;
+    }
+    .header h1 {
+      font-size: 1.9rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #0b3b5f, #1b7e7a);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      display: inline-block;
+    }
+    .badge {
+      background: #eef2f5;
+      border-radius: 40px;
+      padding: 6px 14px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      margin-left: 12px;
+      color: #1e5f6e;
+    }
+    .sub {
+      color: #4a627a;
+      margin-top: 6px;
+      font-weight: 400;
+    }
+
+    /* grid layout */
+    .dashboard {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 28px;
+    }
+
+    /* left area: clinic list */
+    .clinics-section {
+      background: white;
+      border-radius: 28px;
+      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);
+      padding: 20px 24px;
+      transition: all 0.2s;
+    }
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      flex-wrap: wrap;
+    }
+    .loc-btn {
+      background: #eef2ff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 40px;
+      font-weight: 500;
+      font-size: 0.8rem;
+      color: #1b6b6b;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .loc-btn i {
+      margin-right: 6px;
+    }
+    .loc-btn:hover {
+      background: #d9e2ef;
+    }
+    .clinic-grid {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .clinic-card {
+      background: #ffffff;
+      border-radius: 24px;
+      border: 1px solid #e2edf2;
+      padding: 18px 20px;
+      transition: all 0.2s;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+    }
+    .clinic-card:hover {
+      border-color: #bcd0df;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+    }
+    .clinic-name {
+      font-size: 1.3rem;
+      font-weight: 700;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .clinic-distance {
+      font-size: 0.8rem;
+      background: #eef2fa;
+      padding: 4px 10px;
+      border-radius: 40px;
+      font-weight: 500;
+    }
+    .clinic-address {
+      color: #5b6e8c;
+      font-size: 0.8rem;
+      margin: 8px 0 12px 0;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .wait-stats {
+      background: #f9fafc;
+      padding: 12px 14px;
+      border-radius: 20px;
+      margin: 12px 0;
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .queue-info {
+      background: #fff0db;
+      padding: 6px 12px;
+      border-radius: 40px;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+    .wait-time {
+      background: #e2f3f0;
+      padding: 6px 12px;
+      border-radius: 40px;
+      font-weight: 700;
+      color: #146b5e;
+    }
+    .your-position {
+      background: #dee9fc;
+      padding: 4px 12px;
+      border-radius: 40px;
+      font-size: 0.8rem;
+    }
+    .card-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+    .btn-primary, .btn-secondary, .btn-outline {
+      border: none;
+      padding: 8px 18px;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-primary {
+      background: #117f7a;
+      color: white;
+    }
+    .btn-primary:hover {
+      background: #0e6561;
+    }
+    .btn-secondary {
+      background: #eef2f5;
+      color: #1e5f6e;
+    }
+    .btn-secondary:hover {
+      background: #e0e8ef;
+    }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid #bdcbd6;
+      color: #2c5a6e;
+    }
+    .btn-outline:hover {
+      background: #f0f4f9;
+    }
+    .cancel-queue {
+      background: #ffe6e5;
+      color: #bc4e4e;
+    }
+    .cancel-queue:hover {
+      background: #ffd9d8;
+    }
+    /* right sidebar */
+    .right-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+    .chatbot-card, .appointments-card {
+      background: white;
+      border-radius: 28px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+      padding: 20px;
+    }
+    .chat-header {
+      font-weight: 700;
+      font-size: 1.2rem;
+      margin-bottom: 16px;
+      border-left: 4px solid #1b7e7a;
+      padding-left: 12px;
+    }
+    .chat-messages {
+      background: #f9fafb;
+      border-radius: 20px;
+      height: 280px;
+      overflow-y: auto;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .bot-msg, .user-msg {
+      max-width: 85%;
+      padding: 10px 14px;
+      border-radius: 22px;
+      font-size: 0.85rem;
+      line-height: 1.4;
+    }
+    .bot-msg {
+      background: #eef2fa;
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
+    }
+    .user-msg {
+      background: #117f7a;
+      color: white;
+      align-self: flex-end;
+      border-bottom-right-radius: 4px;
+    }
+    .chat-input-area {
+      display: flex;
+      gap: 10px;
+    }
+    .chat-input-area input {
+      flex: 1;
+      padding: 12px 14px;
+      border: 1px solid #cfdfe9;
+      border-radius: 50px;
+      font-family: inherit;
+      outline: none;
+    }
+    .chat-input-area button {
+      background: #1b7e7a;
+      border: none;
+      color: white;
+      border-radius: 50px;
+      width: 44px;
+      cursor: pointer;
+    }
+    .appointment-list {
+      max-height: 240px;
+      overflow-y: auto;
+      margin-top: 12px;
+    }
+    .apt-item {
+      background: #f8fafd;
+      padding: 12px;
+      border-radius: 20px;
+      margin-bottom: 10px;
+      font-size: 0.8rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .cancel-apt {
+      background: none;
+      border: none;
+      color: #bc6f6f;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    .empty-text {
+      color: #8da1b5;
+      text-align: center;
+      padding: 20px;
+    }
+    /* modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    .modal-content {
+      background: white;
+      max-width: 450px;
+      width: 90%;
+      border-radius: 32px;
+      padding: 24px;
+      box-shadow: 0 20px 30px rgba(0,0,0,0.2);
+    }
+    .modal-content h3 {
+      margin-bottom: 16px;
+    }
+    .modal-content input, .modal-content select {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0 16px;
+      border: 1px solid #cbdde6;
+      border-radius: 40px;
+    }
+    .modal-buttons {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+    footer {
+      margin-top: 32px;
+      text-align: center;
+      font-size: 0.75rem;
+      color: #6d8eae;
+    }
+    @media (max-width: 780px) {
+      .dashboard {
+        grid-template-columns: 1fr;
+      }
+      body {
+        padding: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>🏥 ClinicFinder + QueueSystem <span class="badge"><i class="fas fa-clock"></i> Real‑time wait</span></h1>
+    <div class="sub">📍 Nearby clinics · estimated wait · book slot · AI triage assistant</div>
+  </div>
+
+  <div class="dashboard">
+    <!-- LEFT: Clinic finder & queue -->
+    <div class="clinics-section">
+      <div class="section-title">
+        <span><i class="fas fa-map-marker-alt" style="color:#117f7a;"></i> Nearby Clinics</span>
+        <button id="refreshLocationBtn" class="loc-btn"><i class="fas fa-location-dot"></i> Update location</button>
+      </div>
+      <div id="clinicListContainer" class="clinic-grid">
+        <!-- dynamic clinic cards -->
+        <div class="loading" style="padding: 30px; text-align: center;">📍 Detecting your location...</div>
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL: triage chatbot + appointments -->
+    <div class="right-panel">
+      <!-- Triage Chatbot -->
+      <div class="chatbot-card">
+        <div class="chat-header"><i class="fas fa-robot"></i> 🤖 Triage Assistant</div>
+        <div id="chatMessages" class="chat-messages">
+          <div class="bot-msg">👋 Hello! I'm your triage bot. Describe your symptoms (e.g., fever, chest pain, cough) and I'll advise urgency level.</div>
+        </div>
+        <div class="chat-input-area">
+          <input type="text" id="chatInput" placeholder="e.g., headache and high fever..." autocomplete="off">
+          <button id="sendChatBtn"><i class="fas fa-paper-plane"></i></button>
+        </div>
+        <div class="sub" style="font-size: 0.7rem; margin-top: 8px;">⚠️ For emergencies call 911. Not a real doctor.</div>
+      </div>
+
+      <!-- Booking & Appointments Summary -->
+      <div class="appointments-card">
+        <div class="chat-header"><i class="fas fa-calendar-check"></i> 📅 My Appointments</div>
+        <div id="appointmentsList" class="appointment-list">
+          <div class="empty-text">No appointments yet. Book a clinic slot.</div>
+        </div>
+        <button id="openBookingModalBtn" class="btn-secondary" style="width:100%; margin-top: 12px;"><i class="fas fa-plus-circle"></i> New Booking</button>
+      </div>
+    </div>
+  </div>
+  <footer>⚕️ Smart queue: walk‑in queue length affects wait time. Book future appointments separately.</footer>
+</div>
+
+<!-- Booking Modal -->
+<div id="bookingModal" class="modal">
+  <div class="modal-content">
+    <h3><i class="fas fa-stethoscope"></i> Schedule appointment</h3>
+    <label>Clinic</label>
+    <select id="bookingClinicSelect"></select>
+    <label>Full name</label>
+    <input type="text" id="bookingName" placeholder="Your name">
+    <label>Date & Time</label>
+    <input type="datetime-local" id="bookingDateTime">
+    <div class="modal-buttons">
+      <button id="closeModalBtn" class="btn-outline">Cancel</button>
+      <button id="confirmBookingBtn" class="btn-primary">Confirm Booking</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ---------- MOCK CLINICS (with real coordinates around San Francisco area) ----------
+  const CLINICS_DATA = [
+    { id: "clinic1", name: "🌿 Harbor Family Health", address: "2500 16th St, San Francisco", lat: 37.7649, lng: -122.4194, queuePatients: [] },
+    { id: "clinic2", name: "🏥 Metro Urgent Care", address: "890 Mission St, San Francisco", lat: 37.7868, lng: -122.4085, queuePatients: [] },
+    { id: "clinic3", name: "🩺 Pacific Heights Clinic", address: "2100 Webster St, San Francisco", lat: 37.7892, lng: -122.4325, queuePatients: [] },
+    { id: "clinic4", name: "❤️ Bay Community Health", address: "1580 Valencia St, San Francisco", lat: 37.7485, lng: -122.4207, queuePatients: [] },
+    { id: "clinic5", name: "⭐ SoMa Medical Hub", address: "425 1st St, San Francisco", lat: 37.7819, lng: -122.3936, queuePatients: [] }
+  ];
+
+  // Dummy names for simulated queue patients (others waiting)
+  const dummyNames = ["Emma W.", "James L.", "Sophia C.", "Liam R.", "Olivia M.", "Noah P.", "Ava G."];
+  function getRandomDummyPatients(count) {
+    const arr = [];
+    for(let i=0; i<count; i++) {
+      const randomName = dummyNames[Math.floor(Math.random() * dummyNames.length)] + (Math.floor(Math.random()*100));
+      arr.push({ id: crypto.randomUUID ? crypto.randomUUID() : 'id'+Date.now()+i, name: randomName, isUser: false });
+    }
+    return arr;
+  }
+
+  // initialize each clinic queue with 2-5 dummy patients
+  CLINICS_DATA.forEach(clinic => {
+    const dummyCount = Math.floor(Math.random() * 4) + 2; // 2 to 5
+    clinic.queuePatients = getRandomDummyPatients(dummyCount);
+    clinic.queuePatients = clinic.queuePatients.map(p => ({ ...p, isUser: false }));
+  });
+
+  // global state
+  let userLocation = { lat: 37.7749, lng: -122.4194 }; // default SF
+  let locationPermissionDenied = false;
+  let clinics = JSON.parse(JSON.stringify(CLINICS_DATA)); // deep copy mutable queues
+  let appointments = []; // { id, clinicId, clinicName, patientName, datetime }
+  let currentUserQueueEntries = new Map(); // clinicId -> queueEntryId (user's specific entry id in that clinic)
+
+  // Load appointments from localStorage
+  function loadAppointments() {
+    const stored = localStorage.getItem("clinic_appointments");
+    if(stored) appointments = JSON.parse(stored);
+    renderAppointments();
+  }
+  function saveAppointments() {
+    localStorage.setItem("clinic_appointments", JSON.stringify(appointments));
+  }
+
+  // Helper: haversine distance (km)
+  function getDistanceFromUser(lat1, lon1, lat2, lon2) {
+    const R = 6371;
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+              Math.cos(lat1 * Math.PI/180) * Math.cos(lat2 * Math.PI/180) *
+              Math.sin(dLon/2) * Math.sin(dLon/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c;
+  }
+
+  // compute wait time from queue length (12 min per patient)
+  function computeWaitTime(queueLength) {
+    if(queueLength === 0) return "🟢 Now";
+    const mins = queueLength * 12;
+    if(mins < 60) return `${mins} min`;
+    return `~${Math.floor(mins/60)}h ${mins%60}min`;
+  }
+
+  // update user's queue entries sync from clinics queue (find where isUser true)
+  function syncUserQueueEntries() {
+    const newMap = new Map();
+    for(let clinic of clinics) {
+      const userEntry = clinic.queuePatients.find(p => p.isUser === true);
+      if(userEntry) newMap.set(clinic.id, userEntry.id);
+      else if(currentUserQueueEntries.has(clinic.id)) newMap.delete(clinic.id);
+    }
+    return newMap;
+  }
+
+  // Add user to queue of given clinic
+  function addUserToQueue(clinicId) {
+    const clinic = clinics.find(c => c.id === clinicId);
+    if(!clinic) return false;
+    // check already in queue
+    if(clinic.queuePatients.some(p => p.isUser === true)) {
+      alert("You are already in this clinic's queue.");
+      return false;
+    }
+    const newUserId = crypto.randomUUID ? crypto.randomUUID() : 'user-'+Date.now();
+    clinic.queuePatients.push({ id: newUserId, name: "You (Me)", isUser: true, joinedAt: Date.now() });
+    currentUserQueueEntries.set(clinicId, newUserId);
+    renderClinics(); // refresh UI and wait times
+    return true;
+  }
+
+  function removeUserFromQueue(clinicId) {
+    const clinic = clinics.find(c => c.id === clinicId);
+    if(!clinic) return;
+    const index = clinic.queuePatients.findIndex(p => p.isUser === true);
+    if(index !== -1) {
+      clinic.queuePatients.splice(index, 1);
+      currentUserQueueEntries.delete(clinicId);
+      renderClinics();
+    }
+  }
+
+  function getUserPositionInQueue(clinic) {
+    const idx = clinic.queuePatients.findIndex(p => p.isUser === true);
+    if(idx !== -1) return idx + 1;
+    return null;
+  }
+
+  // Render clinic cards sorted by distance
+  function renderClinics() {
+    if(!clinics.length) return;
+    const container = document.getElementById("clinicListContainer");
+    if(!container) return;
+    // compute distances
+    const withDist = clinics.map(clinic => {
+      const dist = getDistanceFromUser(userLocation.lat, userLocation.lng, clinic.lat, clinic.lng);
+      return { ...clinic, distanceKm: dist };
+    });
+    withDist.sort((a,b) => a.distanceKm - b.distanceKm);
+    container.innerHTML = "";
+    for(let clinic of withDist) {
+      const queueLen = clinic.queuePatients.length;
+      const waitText = computeWaitTime(queueLen);
+      const position = getUserPositionInQueue(clinic);
+      const positionHtml = position ? `<span class="your-position"><i class="fas fa-user-clock"></i> Your queue pos: ${position}</span>` : '';
+      const card = document.createElement("div");
+      card.className = "clinic-card";
+      card.innerHTML = `
+        <div class="clinic-name">
+          ${clinic.name}
+          <span class="clinic-distance"><i class="fas fa-location-dot"></i> ${clinic.distanceKm.toFixed(1)} km</span>
+        </div>
+        <div class="clinic-address"><i class="fas fa-map-pin"></i> ${clinic.address}</div>
+        <div class="wait-stats">
+          <span class="queue-info"><i class="fas fa-users"></i> Queue: ${queueLen} waiting</span>
+          <span class="wait-time"><i class="fas fa-hourglass-half"></i> Est. wait: ${waitText}</span>
+          ${positionHtml}
+        </div>
+        <div class="card-actions">
+          ${!position ? `<button class="btn-primary join-queue-btn" data-id="${clinic.id}"><i class="fas fa-sign-in-alt"></i> Join walk‑in queue</button>` : `<button class="btn-outline cancel-queue-btn" data-id="${clinic.id}"><i class="fas fa-times-circle"></i> Cancel queue</button>`}
+          <button class="btn-secondary book-btn" data-id="${clinic.id}" data-name="${clinic.name}"><i class="fas fa-calendar-alt"></i> Book appointment</button>
+        </div>
+      `;
+      container.appendChild(card);
+    }
+    // attach event listeners
+    document.querySelectorAll(".join-queue-btn").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        const id = btn.getAttribute("data-id");
+        addUserToQueue(id);
+      });
+    });
+    document.querySelectorAll(".cancel-queue-btn").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        const id = btn.getAttribute("data-id");
+        removeUserFromQueue(id);
+      });
+    });
+    document.querySelectorAll(".book-btn").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        const clinicId = btn.getAttribute("data-id");
+        const clinicName = btn.getAttribute("data-name");
+        openBookingModal(clinicId, clinicName);
+      });
+    });
+  }
+
+  // Appointment logic
+  function addAppointment(clinicId, clinicName, patientName, dateTime) {
+    if(!patientName.trim()) { alert("Please enter your name"); return false; }
+    if(!dateTime) { alert("Select date & time"); return false; }
+    const newApt = {
+      id: Date.now().toString(),
+      clinicId,
+      clinicName,
+      patientName: patientName.trim(),
+      datetime: dateTime,
+    };
+    appointments.push(newApt);
+    saveAppointments();
+    renderAppointments();
+    return true;
+  }
+
+  function renderAppointments() {
+    const container = document.getElementById("appointmentsList");
+    if(!container) return;
+    if(appointments.length === 0) {
+      container.innerHTML = '<div class="empty-text">📭 No appointments yet. Book a clinic slot.</div>';
+      return;
+    }
+    container.innerHTML = "";
+    appointments.forEach(apt => {
+      const div = document.createElement("div");
+      div.className = "apt-item";
+      div.innerHTML = `
+        <div><strong>${apt.clinicName}</strong><br>${apt.patientName} · ${new Date(apt.datetime).toLocaleString()}</div>
+        <button class="cancel-apt" data-id="${apt.id}"><i class="fas fa-trash-alt"></i></button>
+      `;
+      container.appendChild(div);
+    });
+    document.querySelectorAll(".cancel-apt").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        const id = btn.getAttribute("data-id");
+        appointments = appointments.filter(a => a.id !== id);
+        saveAppointments();
+        renderAppointments();
+      });
+    });
+  }
+
+  // Modal Booking
+  let currentBookingClinicId = null;
+  let currentBookingClinicName = null;
+  function openBookingModal(clinicId, clinicName) {
+    currentBookingClinicId = clinicId;
+    currentBookingClinicName = clinicName;
+    const modal = document.getElementById("bookingModal");
+    const select = document.getElementById("bookingClinicSelect");
+    // populate clinics dropdown
+    select.innerHTML = "";
+    clinics.forEach(cl => {
+      const option = document.createElement("option");
+      option.value = cl.id;
+      option.textContent = cl.name;
+      if(cl.id === clinicId) option.selected = true;
+      select.appendChild(option);
+    });
+    document.getElementById("bookingName").value = "";
+    const now = new Date();
+    now.setMinutes(now.getMinutes() + 60);
+    const isoString = now.toISOString().slice(0, 16);
+    document.getElementById("bookingDateTime").value = isoString;
+    modal.style.display = "flex";
+  }
+
+  function closeModal() {
+    document.getElementById("bookingModal").style.display = "none";
+  }
+
+  function confirmBooking() {
+    const select = document.getElementById("bookingClinicSelect");
+    const clinicId = select.value;
+    const clinicObj = clinics.find(c => c.id === clinicId);
+    if(!clinicObj) return;
+    const patientName = document.getElementById("bookingName").value;
+    const dateTime = document.getElementById("bookingDateTime").value;
+    if(addAppointment(clinicId, clinicObj.name, patientName, dateTime)) {
+      alert(`✅ Appointment booked at ${clinicObj.name} for ${patientName} on ${new Date(dateTime).toLocaleString()}`);
+      closeModal();
+    }
+  }
+
+  // ----- TRIAGE CHATBOT (rule-based) -----
+  const chatMessagesDiv = document.getElementById("chatMessages");
+  function addBotMessage(text) {
+    const msgDiv = document.createElement("div");
+    msgDiv.className = "bot-msg";
+    msgDiv.innerHTML = text;
+    chatMessagesDiv.appendChild(msgDiv);
+    chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
+  }
+  function addUserMessage(text) {
+    const msgDiv = document.createElement("div");
+    msgDiv.className = "user-msg";
+    msgDiv.innerHTML = text;
+    chatMessagesDiv.appendChild(msgDiv);
+    chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
+  }
+  function triageResponse(userInput) {
+    const inputLow = userInput.toLowerCase();
+    if(inputLow.includes("chest pain") || inputLow.includes("difficulty breathing") || inputLow.includes("shortness of breath") || inputLow.includes("severe bleeding")) {
+      return "🚨 URGENT: Possible emergency. Please call emergency services (911) immediately or go to nearest ER. Do not wait.";
+    } else if(inputLow.includes("fever") && (inputLow.includes("high") || inputLow.includes("severe"))) {
+      return "⚠️ Moderate urgency: You may have an infection. Monitor temperature, hydrate. Consider visiting a clinic within 24h.";
+    } else if(inputLow.includes("cough") || inputLow.includes("sore throat") || inputLow.includes("runny nose")) {
+      return "🤧 Mild symptoms: Likely common cold/flu. Rest, fluids, OTC meds. You can book a non-urgent appointment or visit walk-in clinic.";
+    } else if(inputLow.includes("headache") && inputLow.includes("vision")) {
+      return "⚠️ Moderate: Headache with vision changes could be migraine or other. Better get checked at a clinic today.";
+    } else if(inputLow.includes("stomach pain") || inputLow.includes("nausea")) {
+      return "🍲 Possible digestive issue. If severe or persistent >6h, see a doctor. Otherwise, rest and bland diet. Clinic advised within 24h.";
+    } else if(inputLow.includes("injury") || inputLow.includes("wound")) {
+      return "🩹 Minor injury? Clean wound, apply bandage. If deep or bleeding doesn't stop, urgent care needed.";
+    } else {
+      return "💙 For mild symptoms, self-care may help. However, if you feel worsening or concerned, please book a consultation at nearby clinic. I'm here 24/7.";
+    }
+  }
+  function handleChatSend() {
+    const inputEl = document.getElementById("chatInput");
+    const text = inputEl.value.trim();
+    if(!text) return;
+    addUserMessage(text);
+    const reply = triageResponse(text);
+    addBotMessage(reply);
+    inputEl.value = "";
+  }
+
+  // Geolocation & init
+  function getLocationAndRender() {
+    if(!navigator.geolocation) {
+      document.getElementById("clinicListContainer").innerHTML = '<div class="empty-text">⚠️ Geolocation not supported. Using default location.</div>';
+      renderClinics();
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        userLocation = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+        renderClinics();
+      },
+      (err) => {
+        console.warn(err);
+        document.getElementById("clinicListContainer").innerHTML = '<div class="empty-text">📍 Location access denied. Showing clinics based on San Francisco default.</div>';
+        renderClinics();
+      }
+    );
+  }
+
+  // initial sync: load appointments, load clinics queues & map user entries based on isUser flag
+  function rebuildUserMapFromClinics() {
+    const map = new Map();
+    for(let clinic of clinics) {
+      const userEntry = clinic.queuePatients.find(p => p.isUser === true);
+      if(userEntry) map.set(clinic.id, userEntry.id);
+    }
+    currentUserQueueEntries.clear();
+    for(let [k,v] of map.entries()) currentUserQueueEntries.set(k,v);
+  }
+
+  // initialize app
+  function init() {
+    loadAppointments();
+    rebuildUserMapFromClinics();
+    getLocationAndRender();
+    document.getElementById("refreshLocationBtn").addEventListener("click", () => {
+      getLocationAndRender();
+    });
+    document.getElementById("sendChatBtn").addEventListener("click", handleChatSend);
+    document.getElementById("chatInput").addEventListener("keypress", (e) => { if(e.key === "Enter") handleChatSend(); });
+    document.getElementById("openBookingModalBtn").addEventListener("click", () => {
+      if(clinics.length) openBookingModal(clinics[0].id, clinics[0].name);
+      else alert("Loading clinics...");
+    });
+    document.getElementById("closeModalBtn").addEventListener("click", closeModal);
+    document.getElementById("confirmBookingBtn").addEventListener("click", confirmBooking);
+    window.addEventListener("click", (e) => { if(e.target === document.getElementById("bookingModal")) closeModal(); });
+  }
+  init();
+</script>
+</body>
+</html>
